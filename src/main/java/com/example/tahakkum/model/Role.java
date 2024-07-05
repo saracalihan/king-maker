@@ -1,10 +1,10 @@
-package com.example.demo.model;
+package com.example.tahakkum.model;
 
 import java.time.LocalTime;
 
 import org.springframework.data.annotation.CreatedDate;
 
-import com.example.demo.constant.Roles;
+import com.example.tahakkum.constant.Roles;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

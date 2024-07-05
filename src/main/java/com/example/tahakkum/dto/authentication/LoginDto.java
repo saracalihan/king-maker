@@ -1,4 +1,4 @@
-package com.example.demo.dto.authentication;
+package com.example.tahakkum.dto.authentication;
 
 import org.hibernate.validator.constraints.Length;
 

@@ -1,4 +1,4 @@
-package com.example.demo.utility;
+package com.example.tahakkum.utility;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

@@ -1,13 +1,13 @@
-package com.example.demo.service;
+package com.example.tahakkum.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.repository.UserRepository;
-import com.example.demo.utility.Cryption;
-import com.example.demo.utility.Cryption.*;
-import com.example.demo.constant.Roles;
-import com.example.demo.model.User;
+import com.example.tahakkum.repository.UserRepository;
+import com.example.tahakkum.utility.Cryption;
+import com.example.tahakkum.utility.Cryption.*;
+import com.example.tahakkum.constant.Roles;
+import com.example.tahakkum.model.User;
 
 @Service
 public class UserService {

@@ -1,4 +1,4 @@
-package com.example.demo.handler;
+package com.example.tahakkum.handler;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.example.exception.ResponseException;
-import com.example.exception.ResponseException.ErrorObject;
+import com.example.tahakkum.exception.ResponseException;
+import com.example.tahakkum.exception.ResponseException.ErrorObject;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

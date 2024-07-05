@@ -1,4 +1,4 @@
-package com.example.demo.repository;
+package com.example.tahakkum.repository;
 
 import org.springframework.stereotype.Repository;
 

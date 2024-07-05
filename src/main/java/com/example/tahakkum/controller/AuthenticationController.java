@@ -1,4 +1,4 @@
-package com.example.demo.controller;
+package com.example.tahakkum.controller;
 
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.service.UserService;
-import com.example.exception.ResponseException;
-import com.example.demo.constant.Roles;
-import com.example.demo.dto.authentication.*;
-import com.example.demo.model.User;
+import com.example.tahakkum.service.UserService;
+import com.example.tahakkum.constant.Roles;
+import com.example.tahakkum.dto.authentication.*;
+import com.example.tahakkum.exception.ResponseException;
+import com.example.tahakkum.model.User;
 
 import jakarta.persistence.EntityManager;
 import jakarta.validation.Valid;

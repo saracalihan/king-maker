@@ -1,10 +1,10 @@
-package com.example.demo.service;
+package com.example.tahakkum.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.example.demo.repository.TokenRepository;
-import com.example.demo.repository.UserRepository;
+import com.example.tahakkum.repository.TokenRepository;
+import com.example.tahakkum.repository.UserRepository;
 
 @Service()
 public class AuthService {

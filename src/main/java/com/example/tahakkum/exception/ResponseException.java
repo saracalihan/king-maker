@@ -1,4 +1,4 @@
-package com.example.exception;
+package com.example.tahakkum.exception;
 
 import java.util.ArrayList;
 import java.util.HashMap;
