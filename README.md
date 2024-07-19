@@ -116,7 +116,7 @@ docker compose up
     │   │               │   ├── AuthService.java
     │   │               │   └── UserService.java
     │   │               └── utility
-    │   │                   └── Cryption.java
+    │   │                   └── Cryptation.java
     │   └── resources
     │       ├── application.properties
     │       ├── static

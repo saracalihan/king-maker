@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotBlank;
 
 public class LoginDto{
     @NotBlank()
-    String username;
+    public String username;
 
     @NotBlank()
     @Length(min=8, max = 25)
-    String password;
+    public String password;
 }

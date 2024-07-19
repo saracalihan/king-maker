@@ -1,6 +1,6 @@
 package com.example.tahakkum.model;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
 
@@ -22,7 +22,7 @@ public class Role {
 
     @CreatedDate
     @Column(name="created_at", nullable = false, updatable = false)
-    private LocalTime createdAt;
+    private LocalDateTime createdAt;
 
     public Boolean isAdmin(){
         return slug == Roles.Admin;
