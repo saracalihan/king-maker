@@ -20,6 +20,7 @@ This project does not provide an UI, it is only API.
 + [Usage](#usage)
 + [Architecture](#architecture)
   + [Userflow](#userflow)
+    - [OAuth](#oauth)
   + [Endpoints](#endpoints)
   + [Database](#database)
   + [Folder Structure](#folder-structure)
@@ -67,6 +68,16 @@ docker compose up
 
 ### Userflow
 `Todo: Not implemented yet!`
+
+#### OAuth
+
+![Login1](./assets/oauth-login-1.png)
+
+![Login2](./assets/oauth-login-2.png)
+
+![login-fail](./assets/oauth-login-error.png)
+
+![login-fail](./assets/oauth-login-redirect.png)
 
 ### Endpoints
 `Todo: Not implemented yet!`
