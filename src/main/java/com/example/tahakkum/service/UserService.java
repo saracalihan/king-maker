@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.tahakkum.repository.UserRepository;
-import com.example.tahakkum.utility.Cryption;
-import com.example.tahakkum.utility.Cryption.*;
+import com.example.tahakkum.utility.Cryptation;
+import com.example.tahakkum.utility.Cryptation.*;
 import com.example.tahakkum.constant.Roles;
 import com.example.tahakkum.model.User;
 
@@ -16,8 +16,7 @@ public class UserService {
 
         public User create(String username, String email, String name, String password, Roles role){
         User u = new User(name, username, email, role);
-
-        HashAndSalt hns = Cryption.hashAndSaltPassword(password);
+        HashAndSalt hns = Cryptation.hashAndSaltPassword(password);
         u.setPasswordHash(hns.hash);
         u.setPasswordSalt(hns.salt);
 
@@ -25,7 +24,9 @@ public class UserService {
         return u;
     }
 
-    public User find(){
-        return new User();
-    }
+    // public User findone(HashMap<String> w){
+    
+    //     Example<User> where = Example.of()
+    //     return new User();
+    // }
 }

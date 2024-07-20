@@ -14,9 +14,11 @@ public class RegisterDto {
     @Email()
     public String email;
 
+    @NotBlank
     @Length(min=8, max = 25)
     public String password;
 
+    @NotBlank
     @Length(min=8, max = 25)
     public String passwordAgain;
 

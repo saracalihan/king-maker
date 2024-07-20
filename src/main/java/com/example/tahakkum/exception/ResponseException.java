@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
+import com.example.tahakkum.serializer.ResponseExceptionSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.http.HttpStatus;
 
+@JsonSerialize(using = ResponseExceptionSerializer.class)
 public class ResponseException extends Exception {
-    public class ErrorObject{
-        String message;
-        Optional<String> detail;
+    public static class ErrorObject{
+        public String message;
+        public String detail;
 
         public ErrorObject(String msg, Optional<String> d){
             message = msg;
-            detail = d;
+            detail = d.isEmpty() ? "" : d.get();
         }
 
         @Override
@@ -42,8 +45,4 @@ public class ResponseException extends Exception {
         errors.add(new ErrorObject(msg, Optional.empty()));
     }
 
-    // @Override
-    // public String toString(){
-    //     return errors.fo
-    // }
 }
