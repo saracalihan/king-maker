@@ -17,11 +17,16 @@ This project does not provide an UI, it is only API.
 + [Setup](#setup)
   + [Install](#install)
   + [Build and Run](#build-and-run)
-+ [Usage](#usage)
 + [Architecture](#architecture)
   + [Userflow](#userflow)
+    - [Authentication](#authentication)
     - [OAuth](#oauth)
   + [Endpoints](#endpoints)
+    - [Authentication](#authentication-endpoints)
+      - [Register](#register)
+      - [Login](#login)
+      - [Me](#me)
+    - [OAuth](#oauth-endpoints)
   + [Database](#database)
   + [Folder Structure](#folder-structure)
 + [Contributing](#contributing)
@@ -61,27 +66,119 @@ This command builds and run the api then bridge it with postgres:
 docker compose up
 ```
 
-## Usage
-`Todo: Not implemented yet!`
-
 ## Architecture
 
 ### Userflow
-`Todo: Not implemented yet!`
+
+#### Authentication
+
+This is basic user authentication unit.
+
+Firstly, client should register itself with
+`name`, `username`, `email`, `role` and `password`
+data to `/authentication/register`. If the api
+created user successfuly, the api send back data
+to the client can check it.
+
+Then, the client can login with `username`(or `email`,
+key name must be `username`) and `password` on the
+`/authentication/login`. If login is successful,
+server send user data(without hiddens like `password_hash`,
+`password_salt`) and access token, else api send
+the reason of why client dont login.
+
+Now, the client have an access token and can acccess to
+all non-public routes with passing this token in header.
+
+Also, the client get the token's data(`expireAt`, `status`, etc.)
+`/authentication/me`
+if the token is not expired or cancalled.
 
 #### OAuth
 
+If you don't store user's on Tahakkum but you want to other
+Tahakkum users can login easyly in your system u can use
+Tahakkum's OAuth system. You say what information you need
+then if the user login successfuly we send an access token which
+u can access to that information.
+
+Firstly, You have to create an oauth app with personal access token,
+if you dont have an access token please login. Pass your application's
+`name`, `description`(_optional_), `homepage`(_optional_),
+`photo`(_optional_), `scope`(wanted user fields, `id`, `name`,
+`username`, `email`. Ex.: `"name,email"`) and `redirect_url`
+(you can use `HTTP` or `HTTPS`) to `/oauth2/register-app`.
+The api response is`client_id` and `client_secret` tokens.
+
+An example of Tahakkum's OAuth interface:
+
 ![Login1](./assets/oauth-login-1.png)
 
-![Login2](./assets/oauth-login-2.png)
+
+Then, send a `GET` request to
+`/oauth2/auth?client_id=<your_id>&client_secret=<your_secret>`.
+If this secret values are valid, you get a HTML file and show it
+to your user. If user can logged in successfuly, we redirect him
+to the `redirect_url` with `access_token` value on the query.
+For example, if your redirect url is `http://abc.com/login-with-tahakkum`,
+the user redirected to the `http://abc.com/login-with-tahakkum?access_token=XXXX`.
+
+After you handle the request and get to the oauth access token,
+send `GET` request to the `/oauth2/user-info` url with `x-access-token`
+header.
+
+Example:
+
+```http
+GET /oauth2/user-info
+"content-type": "application/json"
+"x-access-token": "XXXX"
+```
+
+After successfully logged in:
+
+![login-redirect](./assets/oauth-login-redirect.png)
+
+If user enter wrong data:
 
 ![login-fail](./assets/oauth-login-error.png)
 
-![login-fail](./assets/oauth-login-redirect.png)
+An app without any description, logo and homapage:
+
+![Login2](./assets/oauth-login-2.png)
 
 ### Endpoints
-`Todo: Not implemented yet!`
 
+#### Authentication Endpoints
+##### Register
+Method: `POST`
+Path: `/authentication/register`
+Body: 
+```js
+{
+  name: "string",
+  username: "string",
+  email: "string",
+  password: "string",
+  passwordAgain: "string"
+}
+```
+response: 
+```js
+{
+  name: "string",
+  username: "string",
+  email: "string",
+  password: "string",
+  passwordAgain: "string",
+  createdAt: "Date",
+  updatedAt: null,
+}
+```
+status: `201`
+
+##### Login
+##### Me
 ### Database
 `Todo: Not implemented yet!`
 
