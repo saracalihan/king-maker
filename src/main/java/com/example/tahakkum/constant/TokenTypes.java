@@ -3,7 +3,8 @@ package com.example.tahakkum.constant;
 import java.util.Optional;
 
 public enum TokenTypes {
-    AccessToken("AccessToken");
+    AccessToken("AccessToken"),
+    OAuthValidate("OAuthValidate");
 
     private final String name;
 

@@ -4,10 +4,10 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
 import com.example.tahakkum.constant.TokenStatuses;
 import com.example.tahakkum.constant.TokenTypes;
+import com.example.tahakkum.repository.TokenRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -44,5 +44,16 @@ public class Token {
 
     @UpdateTimestamp
     @Column(name="updated_at")
-    private LocalDateTime updatedAt = null;;
+    private LocalDateTime updatedAt = null;
+
+    public boolean isExpired(TokenRepository tokenRepository){
+        if(this.getExpiredAt().isBefore(LocalDateTime.now())){
+            if(tokenRepository != null && !this.getStatus().equals(TokenStatuses.Expired.toString())){
+                this.status = TokenStatuses.Expired.toString();
+                tokenRepository.save(this);
+            }
+            return true;
+        }
+        return false;
+    }
 }

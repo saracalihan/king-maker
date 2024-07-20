@@ -2,7 +2,7 @@ package com.example.tahakkum.service;
 
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +12,12 @@ import com.example.tahakkum.constant.TokenStatuses;
 import com.example.tahakkum.constant.TokenTypes;
 import com.example.tahakkum.dto.authentication.LoginResponseDto;
 import com.example.tahakkum.model.Token;
+import com.example.tahakkum.repository.OAuthAppRepository;
 import com.example.tahakkum.repository.TokenRepository;
 import com.example.tahakkum.repository.UserRepository;
 import com.example.tahakkum.utility.Cryptation;
 
 import jakarta.persistence.EntityManager;
-import lombok.AllArgsConstructor;
 
 @Service()
 public class AuthService {
@@ -25,6 +25,9 @@ public class AuthService {
     TokenRepository tokenRepository;
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    TokenService tokenService;
 
     @Autowired
     private EntityManager entityManager;
@@ -35,15 +38,14 @@ public class AuthService {
     }
 
     public Optional<User> checkLogin(String username, String password) {
-        User user = (User) entityManager
+        List<User> res = entityManager
                 .createNativeQuery("SELECT *  FROM users where email='" + username + "' or username='" + username + "'",
                         User.class)
-                .getResultList().get(0);
-
-        if (user == null) {
+                .getResultList();
+        if(res.size()==0){
             return Optional.empty();
         }
-
+        User user = res.get(0);
         if (!Cryptation.comparePassword(password, user.getPasswordHash(), user.getPasswordSalt())) {
             return Optional.empty();
         }
@@ -69,18 +71,11 @@ public class AuthService {
             return Optional.empty();
         }
 
-        Token token = tokenRepository.findOneByValue(t);
-        if(token==null){
+        Optional<Token> ot = tokenService.findTokenByValue(t);
+        if(ot.isEmpty()){
             return Optional.empty();
         }
-
-        if(token.getExpiredAt().isBefore(LocalDateTime.now())){
-            if(!token.getStatus().equals(TokenStatuses.Expired.toString())){
-                token.status = TokenStatuses.Expired.toString();
-                tokenRepository.save(token);
-            }
-            return Optional.empty();
-        }
+        Token token = ot.get();
         if(!token.getType().equals(TokenTypes.AccessToken.toString())){
             return Optional.empty();
         }

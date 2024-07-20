@@ -1,6 +1,8 @@
 package com.example.tahakkum.handler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import org.springframework.http.HttpStatus;
@@ -28,7 +30,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        HashMap<String, String> errorMsg = new HashMap<String, String>();
+        HashMap<String, Object> errorMsg = new HashMap<>();
+        ArrayList<ErrorObject> errors = new ArrayList<>();
+
         e.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName;
             try {
@@ -38,21 +42,19 @@ public class GlobalExceptionHandler {
                 fieldName = error.getObjectName();
             }
             String message = error.getDefaultMessage();
-            errorMsg.put(fieldName, message);
+            errors.add(new ErrorObject(String.format("%s, %s", fieldName, message), Optional.of(fieldName)));
         });
+        errorMsg.put("errors", errors);
+        errorMsg.put("statusCode", "400");
         return new ResponseEntity<>(errorMsg,
                 HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ResponseException.class)
     public ResponseEntity<Object> handleResponseException(ResponseException e) {
-        HashMap<String, String> res = new HashMap<String, String>();
-            StringJoiner joiner = new StringJoiner(", ", "[", "]");
-        for (ErrorObject s : e.errors) {
-            joiner.add(s.toString());
-        }
+        HashMap<String, Object> res = new HashMap<>();
 
-        res.put("errors", joiner.toString());
+        res.put("errors", e.errors);
         res.put("statusCode", Integer.toString( e.statusCode.value()));
         System.out.println(res);
         return new ResponseEntity<>(res, e.statusCode);

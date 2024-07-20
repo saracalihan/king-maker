@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tahkkum Authentication</title>
+    <style>
+        :root {
+            --gray: #ddd;
+            --blue: rgb(58, 106, 236);
+            --text-color: #181818;
+            --warn-text-color: rgb(95, 95, 95);
+        }
+
+        body {
+            background: rgb(250, 250, 250);
+        }
+
+        #oauth {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            padding: 1em;
+            margin: auto;
+            font-size: 14px;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            color: var(--text-color);
+            border: 1px solid var(--gray);
+            border-radius: 16px;
+            box-shadow: 0 2px 4px rgb(212, 212, 212);
+            background-color: #fdfdfd;
+        }
+
+        #oauth #header {
+            text-align: center;
+            color: var(--blue);
+            font-weight: bolder;
+            padding-bottom: 1rem;
+            margin-bottom: 0;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        #oauth #content {
+            /* width: 80%; */
+            padding: 0 1em;
+            text-align: justify;
+        }
+
+        #oauth .app-name {
+            color: var(--blue);
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        #oauth #form {
+            display: flex;
+            flex-direction: column;
+            margin-top: 1rem;
+        }
+
+        #oauth #warn {
+            border-top: 1px solid var(--gray);
+            padding-top: 1rem;
+            color: var(--warn-text-color);
+            margin-bottom: 0;
+            font-size: .9em;
+        }
+
+        #oauth .input-grb {
+            display: grid;
+            margin: .3em 1em;
+        }
+
+        #oauth input {
+            height: 1.5rem;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            padding: .3em .6em;
+        }
+
+        #oauth label {
+            margin-bottom: .3em;
+        }
+
+        #submit-btn {
+            background-color: white;
+            color: var(--blue);
+            padding: .3em .6em;
+            margin: 1em 0;
+            margin-bottom: 0;
+            border-radius: 8px;
+            border: 1px solid var(--blue);
+            font-size: 1.2em;
+            font-weight: bolder;
+            transition: all .2s;
+        }
+
+        #submit-btn:hover {
+            color: white;
+            background-color: var(--blue);
+            cursor: pointer;
+        }
+
+        #warn #datas .scope {
+            color: var(--blue);
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 1em;
+            text-align: center;
+            color: var(--warn-text-color);
+            font-size: small;
+        }
+
+        a {
+            color: var(--blue);
+        }
+
+        #error {
+            background-color: tomato;
+            border: 1px solid rgb(243 77 68);
+            padding: .5em;
+            color: white;
+            border-radius: 12px;
+        }
+
+        #error * {
+            margin: .5em;
+        }
+
+        #description {
+            font-style: italic;
+            border-bottom: 1px solid var(--gray);
+            padding: 0 1.5em;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+        }
+        #description *{
+            margin: .3rem;
+        }
+
+        #app-logo-area {
+            width: 50px;
+            border-radius: 30%;
+            border: 1px solid var(--gray);
+        }
+
+        #app-header {
+            text-align: center;
+            color: var(--blue);
+        }
+        #app-homepage-area, #app-desc-area{
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="oauth">
+
+        <h2 id="header">Tahakkum OAuth</h2>
+        <div id="description">
+            <img id="app-logo-area" src="__image__">
+            <p id="app-header" class="app-name">__appName__</p>
+            <p id="app-desc-area">__appDesc__</p>
+            <a id="app-homepage-area" href="__homePage__" target="_blank" rel="noopener noreferrer">__homePage__</a>
+        </div>
+        <div id="container">
+            <p id="content">
+                You are about to log in to the application named <span class="app-name">__appName__</span> with
+                <i>Tahakkum</i>.
+                <br>
+                <br>
+                Please enter your personal information to continue.
+            </p>
+            <div id="form">
+                <div class="input-grb">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username">
+                </div>
+                <div class="input-grb">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password">
+                </div>
+                <button id="submit-btn">Signin</button>
+            </div>
+            <p id="warn">
+                The __appName__ application will be able to access your following information:
+                <span id="datas"></span>
+            </p>
+        </div>
+    </div>
+    <footer>Developed by <a href="http://saracalihan.com" target="_blank" rel="noopener noreferrer">saracalihan</a>
+    </footer>
+    <script>
+        const datasEl = document.getElementById('datas');
+        const containerEl = document.getElementById('container');
+
+        if (!"__appDesc__") {
+            document.getElementById('app-desc-area').remove();
+        }
+        if (!"__homePage__") {
+            document.getElementById('app-homepage-area').remove();
+        }
+        if (!"__image__") {
+            document.getElementById('app-logo-area').remove();
+        }
+
+        let datas = __scopes__.split(',');
+        for (let d of datas) {
+            let container = document.createElement('span');
+            container.classList.add("scope");
+            container.innerText = d;
+            datasEl.append(container);
+            datasEl.append(', ');
+        }
+        datasEl.removeChild(datasEl.childNodes.item(datasEl.childNodes.length - 1));
+
+        let btn = document.getElementById('submit-btn');
+        btn.addEventListener("click", (e) => {
+            fetch("/oauth2/login?token=__validationToken__", {
+                method: 'POST',
+                headers: { 'Content-Type': "application/json" },
+                body: JSON.stringify({
+                    username: document.getElementById('username').value,
+                    password: document.getElementById('password').value
+                })
+            })
+                .then(async (res) => {
+                    if (res.ok) {
+                        containerEl.innerHTML = "<h3>Login successful</h3><p>You are being redirected...</p>";
+                        setTimeout(() => window.location.replace(res.url), 2000);
+                    } else {
+                        let msg = (await res.json()).errors.map(e => e.message).join('<br>');
+                        console.log(msg);
+                        let errorContainerEl = document.createElement('div');
+                        errorContainerEl.id = 'error';
+                        errorContainerEl.innerHTML = `<h3>Login failed!</h3><p>${msg}</p>`;
+                        containerEl.before(errorContainerEl);
+                        setTimeout(() => errorContainerEl.remove(), 3000);
+                    }
+                })
+                .catch(e => {
+                    console.log(e.json());
+                    alert(e.message);
+                });
+        });
+    </script>
+</body>
+
+</html>

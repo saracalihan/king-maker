@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.tahakkum.service.AuthService;
@@ -45,6 +46,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
+    @ResponseStatus(code=HttpStatus.CREATED)
     public User register(@Valid @RequestBody(required = true) RegisterDto registerDto) throws ResponseException {
 
         if (!registerDto.password.equals(registerDto.passwordAgain)) {
@@ -79,7 +81,7 @@ public class AuthenticationController {
         Optional<Token> token = authService.loginWithAccessToken(accessToken);
 
         if(token.isEmpty()){
-            throw new ResponseException("unouthoried!",HttpStatus.UNAUTHORIZED);
+            throw new ResponseException("invalid access token!",HttpStatus.UNAUTHORIZED);
         }
         Token tt = token.get();
         LoginResponseDto res= new LoginResponseDto(tt.getUser(), tt);
