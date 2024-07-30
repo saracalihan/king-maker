@@ -79,4 +79,8 @@ public class TokenService {
         }
         return Optional.of(token);
     }
+
+    public Token save(Token token){
+        return tokenRepository.save(token);
+    }
 }
