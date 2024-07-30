@@ -12,7 +12,7 @@ public class OAuthUIBuilder {
     static String loginTemplate="";
 
     public OAuthUIBuilder() throws FileNotFoundException {
-            File myObj = new File("/home/saracalihan/Desktop/projects/tahakkum/src/main/java/com/example/tahakkum/template/oauth.html");
+            File myObj = new File("./src/main/java/com/example/tahakkum/template/oauth.html");
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 loginTemplate += myReader.nextLine();

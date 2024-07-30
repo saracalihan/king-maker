@@ -1,16 +1,18 @@
 version: "3.9"
 services:
   backend:
+    container_name: tahakkum-api
     build:
       context: .
     ports:
       - "3000:3000"
     env_file:
-      - .env
+      - .env.prod
   postgres:
+    container_name: tahakkum-master-db
     image: postgres:latest
     env_file:
-      - .env
+      - .env.prod
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
