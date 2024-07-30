@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.tahakkum.service.AuthService;
+import com.example.tahakkum.service.TokenService;
 import com.example.tahakkum.service.UserService;
 import com.example.tahakkum.constant.Roles;
+import com.example.tahakkum.constant.TokenStatuses;
+import com.example.tahakkum.constant.TokenTypes;
 import com.example.tahakkum.dto.authentication.*;
 import com.example.tahakkum.exception.ResponseException;
 import com.example.tahakkum.model.Token;
@@ -27,6 +30,9 @@ import jakarta.validation.Valid;
 public class AuthenticationController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TokenService tokenService;
 
     @Autowired
     private AuthService authService;
@@ -86,5 +92,25 @@ public class AuthenticationController {
         Token tt = token.get();
         LoginResponseDto res= new LoginResponseDto(tt.getUser(), tt);
         return res;
+    }
+
+    @GetMapping("/logout")
+    public void logout(@RequestHeader(name = "x-access-token") String accessToken) throws ResponseException {
+        if (accessToken == null) {
+            throw new ResponseException("unauthoried!", HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<Token> token = tokenService.findTokenByValue(accessToken);
+
+        if(token.isEmpty()){
+            throw new ResponseException("invalid access token!",HttpStatus.UNAUTHORIZED);
+        }
+        Token tt = token.get();
+        if(!tt.type.equals(TokenTypes.AccessToken.toString()) || !tt.getStatus().equals(TokenStatuses.Active.toString())){
+            throw new ResponseException("invalid access token!",HttpStatus.UNAUTHORIZED);
+        }
+
+        tt.status = TokenStatuses.Cancelled.toString();
+        tokenService.save(tt);
     }
 }
