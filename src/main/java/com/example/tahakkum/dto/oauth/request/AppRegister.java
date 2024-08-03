@@ -4,20 +4,24 @@ import org.hibernate.validator.constraints.Length;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class AppRegister {
     @NotBlank
     @Length(max = 25)
-    public String name;
+    String name;
 
     @NotEmpty
-    public String[] scopes;
+    String[] scopes;
 
     @NotBlank
     @Length(min = 10) // http://x.x
-    public String redirectUrl;
+    String redirectUrl;
 
-    public String description;
-    public String homePage;
-    public String photo;
+    String description;
+    String homePage;
+    String photo;
 }

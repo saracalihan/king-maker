@@ -24,7 +24,7 @@ import lombok.Setter;
 @Entity(name="tokens")
 public class Token {
     @Id
-    public String value;
+    private String value;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,9 +32,9 @@ public class Token {
     private User user;
 
     @Column
-    public String type = TokenTypes.AccessToken.toString();
+    private String type = TokenTypes.AccessToken.toString();
 
-    public String status = TokenStatuses.Pending.toString();
+    private String status = TokenStatuses.Pending.toString();
 
     @Column(name="expired_at", nullable = false)
     private LocalDateTime expiredAt;

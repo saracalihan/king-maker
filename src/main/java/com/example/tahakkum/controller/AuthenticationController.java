@@ -90,6 +90,7 @@ public class AuthenticationController {
             throw new ResponseException("invalid access token!",HttpStatus.UNAUTHORIZED);
         }
         Token tt = token.get();
+        System.out.println(tt.getUser().getName());
         LoginResponseDto res= new LoginResponseDto(tt.getUser(), tt);
         return res;
     }
@@ -106,11 +107,11 @@ public class AuthenticationController {
             throw new ResponseException("invalid access token!",HttpStatus.UNAUTHORIZED);
         }
         Token tt = token.get();
-        if(!tt.type.equals(TokenTypes.AccessToken.toString()) || !tt.getStatus().equals(TokenStatuses.Active.toString())){
+        if(!tt.getType().equals(TokenTypes.AccessToken.toString()) || !tt.getStatus().equals(TokenStatuses.Active.toString())){
             throw new ResponseException("invalid access token!",HttpStatus.UNAUTHORIZED);
         }
 
-        tt.status = TokenStatuses.Cancelled.toString();
+        tt.setStatus(TokenStatuses.Cancelled.toString());
         tokenService.save(tt);
     }
 }

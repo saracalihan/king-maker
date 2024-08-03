@@ -81,9 +81,9 @@ public class User {
 
     public Token createAccessToken() {
         Token token = new Token();
-        token.value = Cryptation.randomString(Constants.TOKEN_LENGTH);
-        token.type = TokenTypes.AccessToken.toString();
-        token.status = TokenStatuses.Active.toString();
+        token.setValue(Cryptation.randomString(Constants.TOKEN_LENGTH));
+        token.setType(TokenTypes.AccessToken.toString());
+        token.setStatus(TokenStatuses.Active.toString());
         token.setExpiredAt(LocalDateTime.now().plusHours(Constants.ACCESS_TOKEN_TTL_HOUR));
 
         cancelAuthTokens();
@@ -96,9 +96,9 @@ public class User {
     public void cancelAuthTokens() {
         this.tokens.forEach(token -> {
             if (token.getType().equals(TokenTypes.AccessToken.toString())
-                    && (token.status.equals(TokenStatuses.Active.toString())
-                            || token.status.equals(TokenStatuses.Pending.toString()))) {
-                token.status = TokenStatuses.Cancelled.toString();
+                    && (token.getStatus().equals(TokenStatuses.Active.toString())
+                            || token.getStatus().equals(TokenStatuses.Pending.toString()))) {
+                token.setStatus(TokenStatuses.Cancelled.toString());
             }
         });
     }
