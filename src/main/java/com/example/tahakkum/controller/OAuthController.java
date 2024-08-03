@@ -59,7 +59,7 @@ public class OAuthController {
 
     @PostMapping("/register-app")
     public OAuthApp registerApp(@Valid @RequestBody(required = true) AppRegister registerDto, @RequestHeader(name = "x-access-token") String token) throws ResponseException {
-        if (oauthAppRepository.existsByName(registerDto.name)) {
+        if (oauthAppRepository.existsByName(registerDto.getName())) {
             throw new ResponseException("name already exist!");
         }
 
@@ -71,7 +71,7 @@ public class OAuthController {
         ArrayList<String> validFields = new ArrayList<>(Arrays.asList(Constants.OAUTH_ACCESSABLE_USER_FIELDS));
         ArrayList<String> invalidScopes = new ArrayList<>();
 
-        for (String s : registerDto.scopes) {
+        for (String s : registerDto.getScopes()) {
             if (!validFields.contains(s)) {
                 invalidScopes.add(s);
             }
@@ -91,21 +91,21 @@ public class OAuthController {
         }
 
         // redirect url doğrula
-        if (!registerDto.redirectUrl.startsWith("http://") && !registerDto.redirectUrl.startsWith("https://")) {
+        if (!registerDto.getRedirectUrl().startsWith("http://") && !registerDto.getRedirectUrl().startsWith("https://")) {
             throw new ResponseException(
-                    String.format("Desteklenmeyen 'redirect_url' adresi: '%s'", registerDto.redirectUrl));
+                    String.format("Desteklenmeyen 'redirect_url' adresi: '%s'", registerDto.getRedirectUrl()));
         }
 
         OAuthApp app = new OAuthApp();
-        app.name = registerDto.name;
-        app.description = registerDto.description;
-        app.homepage = registerDto.homePage;
-        app.photo = registerDto.photo;
-        app.redirectUrl = registerDto.redirectUrl;
-        app.scopes = registerDto.scopes;
-        app.owner = accessToken.get().getUser();
-        app.clientId = Cryptation.byteToString(Cryptation.createSalt(24));
-        app.clientSecret = Cryptation.byteToString(Cryptation.createSalt(24));
+        app.setName(registerDto.getName());
+        app.setDescription( registerDto.getDescription());
+        app.setHomepage( registerDto.getHomePage());
+        app.setPhoto( registerDto.getPhoto());
+        app.setRedirectUrl( registerDto.getRedirectUrl());
+        app.setScopes( registerDto.getScopes());
+        app.setOwner(accessToken.get().getUser());
+        app.setClientId(Cryptation.byteToString(Cryptation.createSalt(24)));
+        app.setClientSecret(Cryptation.byteToString(Cryptation.createSalt(24)));
         oauthAppRepository.save(app);
 
         return app;
@@ -127,16 +127,16 @@ public class OAuthController {
         // redirect_url'e yönlendir
         // üretilecek token usernama pass giren kullanıcıya ait
         OAuthApp app = oauthAppRepository.findOneByClientId(clientId);
-        if (app == null || !app.clientSecret.equals(clientSecret)) {
+        if (app == null || !app.getClientSecret().equals(clientSecret)) {
             // client_id or client_secret invalid uı
             return "Client id or secret is invalid!";
         }
-        Token validationToken = tokenService.createToken(app.owner,
+        Token validationToken = tokenService.createToken(app.getOwner(),
         TokenTypes.OAuthValidate, TokenStatuses.Active, Constants.OAUTH_VALIDATION_TOKEN_TTL_MIN*60L);
 
         // build html
         // bu sayfa /oauth/login'a tokenla birlikte istek atacak
-        return oauthUIBuilder.createLogin(app.name, app.description, app.homepage, app.photo, app.scopes, app.redirectUrl, validationToken.value);
+        return oauthUIBuilder.createLogin(app.getName(), app.getDescription(), app.getHomepage(), app.getPhoto(), app.getScopes(), app.getRedirectUrl(), validationToken.getValue());
     }
 
     @GetMapping("/user-info")
@@ -149,7 +149,7 @@ public class OAuthController {
             throw new ResponseException("Access token is expired!",HttpStatus.UNAUTHORIZED);
         }
         OAuthApp app = token.getApp();
-        return token.getUser().getFields(app.scopes);
+        return token.getUser().getFields(app.getScopes());
     }
 
     @PostMapping("/token")
@@ -190,7 +190,7 @@ public class OAuthController {
         // if user is valid, create access token for app
         OAuthToken accessToken = tokenService.createOauthToken(app, loginInfo.get().user, t);
 
-        RedirectView redirect = new RedirectView(String.format("%s?access_token=%s", app.getRedirectUrl(), accessToken.value));
+        RedirectView redirect = new RedirectView(String.format("%s?access_token=%s", app.getRedirectUrl(), accessToken.getValue()));
         redirect.setStatusCode(HttpStatusCode.valueOf(301));
 
         return redirect;

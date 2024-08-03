@@ -25,35 +25,35 @@ import lombok.Setter;
 public class OAuthApp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
     @Column(name = "client_secret")
-    public String clientSecret;
+    private String clientSecret;
 
     @Column(name = "client_id")
-    public String clientId;
+    private String clientId;
 
     @Column
-    public String name;
+    private String name;
 
     @Column(nullable = true)
-    public String homepage=null;
+    private String homepage=null;
 
     @Column(nullable = true)
-    public String photo=null;
+    private String photo=null;
 
     @Column(nullable = true)
-    public String description=null;
+    private String description=null;
     
     @Column(nullable = false)
-    public String[] scopes;
+    private String[] scopes;
 
     @Column(name = "redirect_url", nullable = false)
-    public String redirectUrl;
+    private String redirectUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
-    public User owner;
+    private User owner;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -64,5 +64,5 @@ public class OAuthApp {
     private LocalDateTime updatedAt = null;
     // reletions
     @OneToMany(mappedBy = "app")
-    public List<OAuthToken> tokens = new ArrayList<>();
+    private List<OAuthToken> tokens = new ArrayList<>();
 }

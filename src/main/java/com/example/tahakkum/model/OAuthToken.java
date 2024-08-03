@@ -29,23 +29,23 @@ public class OAuthToken {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "app_id")
-    public OAuthApp app;
+    private OAuthApp app;
 
     @Column(unique = true, nullable = false)
-    public String value;
+    private String value;
 
     @Column(nullable = false)
-    public String status = TokenStatuses.Active.toString();
+    private String status = TokenStatuses.Active.toString();
 
     @Column(name = "expired_at", nullable = false)
     private LocalDateTime expiredAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    public User user;
+    private User user;
 
     // TODO:indexlenmeli
-    public String clientId;
+    private String clientId;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
