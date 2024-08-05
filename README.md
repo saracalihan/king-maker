@@ -1,6 +1,8 @@
 # Tahakkum
 
-***tahakküm*** means domination, sovereignty in Turkish.
+<img src="./src/main/resources/static/tahakkum-logo.png" width="80" alt="tahakkum logo"/>
+
+***tahakküm*** means domination, sovereignty in Arabic/Turkish.
 With this RESTFUL API, you can manage your users
 access to resources, basic or token authentication and
 authorization, use an OAuth-like registration system,

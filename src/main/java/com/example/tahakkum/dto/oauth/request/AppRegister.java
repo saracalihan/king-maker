@@ -21,6 +21,7 @@ public class AppRegister {
     @Length(min = 10) // http://x.x
     String redirectUrl;
 
+    @Length(max = 250)
     String description;
     String homePage;
     String photo;

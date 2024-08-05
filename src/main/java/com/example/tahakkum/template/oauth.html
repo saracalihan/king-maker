@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tahkkum Authentication</title>
+    <link rel="shortcut icon" href="/public/tahakkum-logo.png">
     <style>
         :root {
             --gray: #ddd;
@@ -21,6 +22,7 @@
             display: flex;
             flex-direction: column;
             max-width: 300px;
+            min-width: 200px;
             padding: 1em;
             margin: auto;
             font-size: 14px;
@@ -34,10 +36,11 @@
 
         #oauth #header {
             text-align: center;
+            width: 100%;
             color: var(--blue);
             font-weight: bolder;
-            padding-bottom: 1rem;
-            margin-bottom: 0;
+            padding-bottom: .5rem;
+            margin: 0 auto;
             border-bottom: 1px solid var(--gray);
         }
 
@@ -147,6 +150,7 @@
 
         #app-logo-area {
             width: 50px;
+            aspect-ratio: 1/1;
             border-radius: 30%;
             border: 1px solid var(--gray);
         }
@@ -158,12 +162,17 @@
         #app-homepage-area, #app-desc-area{
             width: 100%;
         }
+        #tahakkum-logo{
+            width: 35px;
+            aspect-ratio: 1/1;
+            margin: auto;
+        }
     </style>
 </head>
 
 <body>
     <div id="oauth">
-
+        <img src="/public/tahakkum-logo.png" alt="logo" id="tahakkum-logo">
         <h2 id="header">Tahakkum OAuth</h2>
         <div id="description">
             <img id="app-logo-area" src="__image__">
@@ -201,6 +210,7 @@
     <script>
         const datasEl = document.getElementById('datas');
         const containerEl = document.getElementById('container');
+        const passwordEl = document.getElementById('password');
 
         if (!"__appDesc__") {
             document.getElementById('app-desc-area').remove();
@@ -223,7 +233,7 @@
         datasEl.removeChild(datasEl.childNodes.item(datasEl.childNodes.length - 1));
 
         let btn = document.getElementById('submit-btn');
-        btn.addEventListener("click", (e) => {
+        function login(){
             fetch("/oauth2/login?token=__validationToken__", {
                 method: 'POST',
                 headers: { 'Content-Type': "application/json" },
@@ -250,7 +260,16 @@
                     console.log(e.json());
                     alert(e.message);
                 });
+        }
+        btn.addEventListener("click", (e) => {
+            login();
         });
+        passwordEl.addEventListener("keypress", (e)=>{
+            if(e.code === "Enter"){
+                login();
+            }
+        })
+
     </script>
 </body>
 
