@@ -46,9 +46,10 @@ This project does not provide a UI, it is only API.
 - [x] Username, password authentication
 - [x] Access token authentication
 - [x] access token authentication
-- [x] OAuth token authentication
+- [x] OAuth token authentication(RESTful, UI)
 - [x] Get user datail with oauth access token
 - [ ] User CRUD
+- [ ] OTP, TOTP authentication(RESTful, UI)
 - [ ] User role CRUD(a user has two roles, first is role related authorization and second is custom role like dealer, teacher, etc.)
 - [ ] Authorization(path and role based)
 - [ ] User blacklist for authorization
