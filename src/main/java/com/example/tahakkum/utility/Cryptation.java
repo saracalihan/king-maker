@@ -77,4 +77,13 @@ public class Cryptation {
 
         return randomString + timestamp;
     }
+
+    public static String generateUrlSafeToken(int size){
+        return byteToString(Cryptation.createSalt(size))
+            .replaceAll("/", "a")
+            .replaceAll("'", "1")
+            .replaceAll("\"", "2")
+            .replaceAll("\\?", "_")
+            .replaceAll("\\\\", "b");
+    }
 }

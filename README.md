@@ -24,6 +24,7 @@ This project does not provide a UI, it is only API.
   + [Userflow](#userflow)
     - [Authentication](#authentication)
     - [OAuth](#oauth)
+    - [(T)OTP](#one-time-password)
   + [Endpoints](#endpoints)
     - [Authentication](#authentication-endpoints)
       - [Register](#register)
@@ -49,7 +50,7 @@ This project does not provide a UI, it is only API.
 - [x] OAuth token authentication(RESTful, UI)
 - [x] Get user datail with oauth access token
 - [ ] User CRUD
-- [ ] OTP, TOTP authentication(RESTful, UI)
+- [x] OTP, TOTP authentication(RESTful, UI)
 - [ ] User role CRUD(a user has two roles, first is role related authorization and second is custom role like dealer, teacher, etc.)
 - [ ] Authorization(path and role based)
 - [ ] User blacklist for authorization
@@ -168,6 +169,72 @@ If user enter wrong data:
 An app without any description, logo and homepage:
 
 ![Login2](./assets/oauth-login-2.png)
+
+#### One Time Password
+If you want to use two-step verification in your system,
+you should send single-use codes to users using methods
+such as mail, sms or 2 Factor Authenticator.
+
+You can automate the steps of creating codes, sending codes
+and verifying codes with Tahakkum.
+
+![OPT](./assets/otp.png)
+
+**First**, after logging in with a developer account,
+you need to create an OTP Application with the given
+`x-access-token`. When creating the application,
+it is sufficient to send the name of the application,
+the address to which we will send the code when the
+code is created, the method, the body, query and
+header values ​​​​if any, the user information when the code
+verification is successful and unsuccessful, and theaddress
+to which we will send the `GET` request request to `/otp/register-app`
+with the `POST` method. In response, with the `201` status code,
+
+The code redirection process is completely dynamically managed
+thanks to `codeRedirect` information. Once the code is created,
+you can send REST requests in the format requested by your
+service providers such as mail, sms or 2 Factor Authenticator and
+send the code to your user.
+
+> When you write the `__id__`, `__code__`, `__secret__` and
+`__verifyUrl__` values ​​in a field other than `codeRedirectMethod`
+within the `codeRedirect` values, Tahakkum automatically replaces
+these words with values ​​specific to that user in the request it makes.
+
+**To create a code**, you can send the `client_id`, `client_secret`
+values ​​of your application to `/otp` with the `POST` method and
+your user's tracking `metadata` content if you wish. It returns the
+`id`, `secret`, `verifyUrl` information of the code with the
+`201` code and sends the request to the `codeRedirect` address.
+
+**If the mail or SMS request return error***, we will send you back
+the message returned by that server with a `400` error code and
+a body in the form of `status`, `message` and the generated code
+will be cancelled.
+
+> **The code is valid for 72 hours**. After this period, the code is expired.
+
+**If you want to verify a code**, send the `code`, `id` and `secret`
+values ​​to `/otp/verify` with the `POST` method. If the operation
+is successful, you will be returned with `200` status code and
+`metadata` information, if not, you will be given a `401` status code
+
+
+![TOPT](./assets/totp.png)
+
+**Time based one time code**, the operations are carried out in the
+same way as `otp`.
+
+To generate the code, send the `time` depth to `/otp/time-based` as
+**seconds**(*2 seconds will be added to this time for the network*
+*delay that will occur during the transmission of the code*).
+To verify the code, send a request to `/otp/time-based/verify`.
+
+**Important Note**
+In both otp and totp processes, an interface URL that you can use to
+verify the code is sent to you. Instead of using `verify` endpoints,
+you can redirect your users directly to this address.
 
 ### Endpoints
 

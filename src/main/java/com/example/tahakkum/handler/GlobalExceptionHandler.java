@@ -2,11 +2,15 @@ package com.example.tahakkum.handler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -58,5 +62,15 @@ public class GlobalExceptionHandler {
         res.put("statusCode", Integer.toString( e.statusCode.value()));
         System.out.println(res);
         return new ResponseEntity<>(res, e.statusCode);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Object> handleResponseBodyException(HttpMessageNotReadableException e) {
+        HashMap<String, Object> res = new HashMap<>();
+
+        res.put("errors", e.getMessage());
+        res.put("statusCode", Integer.toString( 400));
+        System.out.println(res);
+        return new ResponseEntity<>(res, HttpStatusCode.valueOf(400));
     }
 }
