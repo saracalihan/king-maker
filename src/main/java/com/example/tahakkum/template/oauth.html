@@ -175,14 +175,14 @@
         <img src="/public/tahakkum-logo.png" alt="logo" id="tahakkum-logo">
         <h2 id="header">Tahakkum OAuth</h2>
         <div id="description">
-            <img id="app-logo-area" src="__image__">
-            <p id="app-header" class="app-name">__appName__</p>
-            <p id="app-desc-area">__appDesc__</p>
-            <a id="app-homepage-area" href="__homePage__" target="_blank" rel="noopener noreferrer">__homePage__</a>
+            <img id="app-logo-area" src="{{image}}">
+            <p id="app-header" class="app-name">{{appName}}</p>
+            <p id="app-desc-area">{{appDesc}}</p>
+            <a id="app-homepage-area" href="{{homePage}}" target="_blank" rel="noopener noreferrer">{{homePage}}</a>
         </div>
         <div id="container">
             <p id="content">
-                You are about to log in to the application named <span class="app-name">__appName__</span> with
+                You are about to log in to the application named <span class="app-name">{{appName}}</span> with
                 <i>Tahakkum</i>.
                 <br>
                 <br>
@@ -200,7 +200,7 @@
                 <button id="submit-btn">Signin</button>
             </div>
             <p id="warn">
-                The __appName__ application will be able to access your following information:
+                The {{appName}} application will be able to access your following information:
                 <span id="datas"></span>
             </p>
         </div>
@@ -212,17 +212,17 @@
         const containerEl = document.getElementById('container');
         const passwordEl = document.getElementById('password');
 
-        if (!"__appDesc__") {
+        if (!"{{appDesc}}") {
             document.getElementById('app-desc-area').remove();
         }
-        if (!"__homePage__") {
+        if (!"{{homePage}}") {
             document.getElementById('app-homepage-area').remove();
         }
-        if (!"__image__") {
+        if (!"{{image}}") {
             document.getElementById('app-logo-area').remove();
         }
 
-        let datas = __scopes__.split(',');
+        let datas = {{scopes}}.split(',');
         for (let d of datas) {
             let container = document.createElement('span');
             container.classList.add("scope");
@@ -234,7 +234,7 @@
 
         let btn = document.getElementById('submit-btn');
         function login(){
-            fetch("/oauth2/login?token=__validationToken__", {
+            fetch("/oauth2/login?token={{validationToken}}", {
                 method: 'POST',
                 headers: { 'Content-Type': "application/json" },
                 body: JSON.stringify({

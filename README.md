@@ -452,7 +452,7 @@ status: `201`
 │   │               │   └── oauth.html
 │   │               └── utility
 │   │                   ├── Cryptation.java
-│   │                   └── OAuthUIBuilder.java
+│   │                   └── UIBuilder.java
 │   └── resources
 │       ├── application.properties
 │       ├── static

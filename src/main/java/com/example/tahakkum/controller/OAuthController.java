@@ -35,7 +35,7 @@ import com.example.tahakkum.repository.TokenRepository;
 import com.example.tahakkum.service.AuthService;
 import com.example.tahakkum.service.TokenService;
 import com.example.tahakkum.utility.Cryptation;
-import com.example.tahakkum.utility.OAuthUIBuilder;
+import com.example.tahakkum.utility.UIBuilder;
 
 import jakarta.validation.Valid;
 
@@ -53,9 +53,6 @@ public class OAuthController {
     private AuthService authService;
     @Autowired
     private TokenService tokenService;
-
-    @Autowired
-    private OAuthUIBuilder oauthUIBuilder; // TODO:Singleton
 
     @PostMapping("/register-app")
     public OAuthApp registerApp(@Valid @RequestBody(required = true) AppRegister registerDto, @RequestHeader(name = "x-access-token") String token) throws ResponseException {
@@ -136,7 +133,7 @@ public class OAuthController {
 
         // build html
         // bu sayfa /oauth/login'a tokenla birlikte istek atacak
-        return oauthUIBuilder.createLogin(app.getName(), app.getDescription(), app.getHomepage(), app.getPhoto(), app.getScopes(), app.getRedirectUrl(), validationToken.getValue());
+        return UIBuilder.getInstance().createLogin(app.getName(), app.getDescription(), app.getHomepage(), app.getPhoto(), app.getScopes(), app.getRedirectUrl(), validationToken.getValue());
     }
 
     @GetMapping("/user-info")
