@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tahkkum TOTP</title>
+    <link rel="shortcut icon" href="/public/tahakkum-logo.png">
+    <style>
+        :root {
+            --gray: #ddd;
+            --blue: rgb(58, 106, 236);
+            --text-color: #181818;
+            --warn-text-color: rgb(95, 95, 95);
+        }
+
+        body {
+            background: rgb(250, 250, 250);
+        }
+
+        #otp {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            min-width: 200px;
+            padding: 1em;
+            margin: auto;
+            font-size: 14px;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            color: var(--text-color);
+            border: 1px solid var(--gray);
+            border-radius: 16px;
+            box-shadow: 0 2px 4px rgb(212, 212, 212);
+            background-color: #fdfdfd;
+        }
+
+        #otp #header {
+            text-align: center;
+            width: 100%;
+            color: var(--blue);
+            font-weight: bolder;
+            padding-bottom: .5rem;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        #otp #content {
+            /* width: 80%; */
+            padding: 0 1em;
+            text-align: justify;
+        }
+
+        #otp #form {
+            display: flex;
+            flex-direction: column;
+            margin-top: 1rem;
+        }
+
+        #otp #form #inputs {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+        }
+
+        #otp #form #inputs input {
+            text-align: center;
+            width: 1em;
+        }
+
+        #otp #warn {
+            border-top: 1px solid var(--gray);
+            padding-top: 1rem;
+            color: var(--warn-text-color);
+            margin-bottom: 0;
+            font-size: .9em;
+        }
+
+        #otp .input-grb {
+            display: grid;
+            margin: .3em 1em;
+        }
+
+        #otp input {
+            height: 1.5rem;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            padding: .3em .6em;
+        }
+
+        #submit-btn {
+            background-color: white;
+            color: var(--blue);
+            padding: .3em .6em;
+            margin: 1em 0;
+            margin-bottom: 0;
+            border-radius: 8px;
+            border: 1px solid var(--blue);
+            font-size: 1.2em;
+            font-weight: bolder;
+            transition: all .2s;
+        }
+
+        #submit-btn:hover {
+            color: white;
+            background-color: var(--blue);
+            cursor: pointer;
+        }
+
+        footer {
+            margin-top: 1em;
+            text-align: center;
+            color: var(--warn-text-color);
+            font-size: small;
+        }
+
+        a {
+            color: var(--blue);
+        }
+
+        #error {
+            background-color: tomato;
+            border: 1px solid rgb(243 77 68);
+            padding: .5em;
+            color: white;
+            border-radius: 12px;
+        }
+
+        #error * {
+            margin: .5em;
+        }
+
+        #description * {
+            margin: .3rem;
+        }
+
+        #app-logo-area {
+            width: 50px;
+            aspect-ratio: 1/1;
+            border-radius: 30%;
+            border: 1px solid var(--gray);
+        }
+
+        #tahakkum-logo {
+            width: 35px;
+            aspect-ratio: 1/1;
+            margin: auto;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox */
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        #submit-btn:focus{
+            background: var(--blue);
+            color: white;
+        }
+        .app-name {
+            color: var(--blue);
+            font-weight: bold;
+            font-style: italic;
+        }
+        #timer {
+            aspect-ratio: 1/1;
+            margin: .5em auto;
+            width: 30%;
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="otp">
+        <img src="/public/tahakkum-logo.png" alt="logo" id="tahakkum-logo">
+        <h2 id="header">Tahakkum TOTP</h2>
+        <div id="container">
+            <canvas id="timer"></canvas>
+            <p id="content">
+                Enter your Time-Based One Time Password code here.
+            </p>
+            <div id="form">
+                <div id="inputs">
+                    <input type="number" class="code-digit" min="0" max="9" name="1" id="1" autofocus>
+                    <input type="number" class="code-digit" min="0" max="9" name="2" id="2">
+                    <input type="number" class="code-digit" min="0" max="9" name="3" id="3">
+                    <input type="number" class="code-digit" min="0" max="9" name="4" id="4">
+                    <input type="number" class="code-digit" min="0" max="9" name="5" id="5">
+                    <input type="number" class="code-digit" min="0" max="9" name="6" id="6">
+                </div>
+                <button id="submit-btn">Verify</button>
+            </div>
+            <p id="warn">
+                <i><strong>Tahakkum</strong></i> only generates and verifies the code. If you cannot access your code,
+                contact to the <span class="app-name">{{name}}</span> application
+            </p>
+        </div>
+    </div>
+    <footer>Developed by <a href="http://saracalihan.com" target="_blank" rel="noopener noreferrer">saracalihan</a>
+    </footer>
+    <script>
+        const remainSecond = new Number(((new Date({{expireAt}}) - new Date())/1000).toFixed());
+        if(remainSecond<0){
+            window.location.replace({{failUrl}});
+        }
+        let ac; /* OTP Abort controller */
+        let remain = remainSecond;
+        const containerEl = document.getElementById('container');
+        const digits = [...document.getElementsByClassName("code-digit")];
+
+        const canvas = document.getElementById("timer");
+        canvas.width=containerEl.getBoundingClientRect().width;
+        canvas.height=canvas.width;
+        const ctx = canvas.getContext("2d");
+        const fontSize = canvas.height/3;
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = "rgb(58, 106, 236)";
+        ctx.fillStyle = "rgb(24, 24, 24)";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = `${canvas.height/3}px Arial`;
+        drawTime();
+        const id = setInterval(() => {
+            if(remain==0){
+                clearInterval(id);
+                login();
+                return;
+            }
+            remain-=1;
+            drawTime();
+        }, 1000);
+
+        let btn = document.getElementById('submit-btn');
+        function login(otpValue) {
+            fetch("/otp/time-based/verify", {
+                method: 'POST',
+                headers: { 'Content-Type': "application/json" },
+                body: JSON.stringify({
+                    secret: {{secret}},
+                    id: {{id}},
+                    code: otpValue ?? digits.map((a) => a.value).reduce((a, b) => a + b),
+                })
+            })
+                .then(res =>{
+                    window.location.replace( res.status === 200 ? {{redirectUrl}} : {{failUrl}});
+                })
+                .catch(e => {
+                    console.log(e.json());
+                    alert(e.message);
+                });
+        }
+        btn.addEventListener("click", (e) => {
+            login();
+        });
+        function drawTime(){
+            ctx.beginPath();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.arc(
+                canvas.width/2,
+                canvas.height/2,
+                (canvas.width/2) - ctx.lineWidth,
+                Math.PI/2*3,
+                (Math.PI/2*3) - (2 * Math.PI * remain  / remainSecond),
+                true
+            );
+
+            ctx.fillText(
+                remain,
+                canvas.width/2,
+                canvas.height/2
+            );
+            ctx.stroke();
+        }
+
+
+        for (let i = 0; i < digits.length; i++) {
+            let digit = digits[i];
+            digit.addEventListener("input", (e) => {
+                if (digit.value.length === 1) {
+                    if (i < digits.length - 1) {
+                        digits[i + 1].focus();
+                    } else {
+                        btn.focus();
+                    }
+                }
+            });
+
+            digit.addEventListener("keydown", (e) => {
+                if (e.key === "Backspace" && digit.value.length === 0 && i > 0) {
+                    digits[i - 1].focus();
+                }
+            });
+        }
+
+        /* otp autocomplete */
+        ac = new AbortController();
+        setTimeout(() => {
+            ac.abort();
+        }, 1 * 60 * 1000);
+
+        if ('OTPCredential' in window) {
+            window.addEventListener('DOMContentLoaded', e => {
+                navigator.credentials.get({
+                otp: { transport:['sms'] },
+                signal: ac.signal
+                }).then(otp => {
+                    login(otp.code);
+                }).catch(err => {
+                console.log(err);
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -12,7 +12,6 @@ import com.example.tahakkum.constant.TokenStatuses;
 import com.example.tahakkum.constant.TokenTypes;
 import com.example.tahakkum.dto.authentication.LoginResponseDto;
 import com.example.tahakkum.model.Token;
-import com.example.tahakkum.repository.OAuthAppRepository;
 import com.example.tahakkum.repository.TokenRepository;
 import com.example.tahakkum.repository.UserRepository;
 import com.example.tahakkum.utility.Cryptation;

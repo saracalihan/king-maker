@@ -2,6 +2,7 @@ package com.example.tahakkum.utility;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
 import java.util.Scanner;
 import java.util.StringJoiner;
 
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 public class UIBuilder {
     private static UIBuilder instance = null;
     String oauthLoginTemplate = "";
+    String totpTemplate = "";
+    String otpTemplate = "";
 
     public UIBuilder(){
         try {
@@ -19,6 +22,8 @@ public class UIBuilder {
             }
             // load templates
             oauthLoginTemplate = loadTemplate("./src/main/java/com/example/tahakkum/template/oauth.html");
+            totpTemplate = loadTemplate("./src/main/java/com/example/tahakkum/template/totp.html");
+            otpTemplate = loadTemplate("./src/main/java/com/example/tahakkum/template/otp.html");
 
             System.out.println("UIBuilder: Templates loadad.");
             instance = this;
@@ -74,5 +79,24 @@ public class UIBuilder {
                 .replaceAll("\\{\\{redirectUrl\\}\\}", redirectUrl);
 
         return template;
+    }
+
+    public String createOTP(String name, String id, String secret, String redirectUrl, String failUrl){
+        return instance.otpTemplate
+            .replaceAll("\\{\\{id\\}\\}", String.format("\"%s\"", id))
+            .replaceAll("\\{\\{secret\\}\\}", String.format("\"%s\"", secret))
+            .replaceAll("\\{\\{redirectUrl\\}\\}", String.format("\"%s\"", redirectUrl))
+            .replaceAll("\\{\\{failUrl\\}\\}", String.format("\"%s\"", failUrl))
+            .replaceAll("\\{\\{name\\}\\}", name);
+    }
+
+    public String createTOTP(String name, String id, String secret, String redirectUrl, String failUrl, LocalDateTime expireAt){
+        return instance.totpTemplate
+        .replaceAll("\\{\\{id\\}\\}", String.format("\"%s\"", id))
+        .replaceAll("\\{\\{secret\\}\\}", String.format("\"%s\"", secret))
+        .replaceAll("\\{\\{redirectUrl\\}\\}", String.format("\"%s\"", redirectUrl))
+        .replaceAll("\\{\\{failUrl\\}\\}", String.format("\"%s\"", failUrl))
+            .replaceAll("\\{\\{name\\}\\}", name)
+            .replaceAll("\\{\\{expireAt\\}\\}", String.format("\"%s\"", expireAt.toString()));
     }
 }
