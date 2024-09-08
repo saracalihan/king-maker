@@ -11,7 +11,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 
 @Entity(name="roles")
 public class Role {

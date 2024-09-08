@@ -18,7 +18,7 @@
             background: rgb(250, 250, 250);
         }
 
-        #totp {
+        #otp {
             display: flex;
             flex-direction: column;
             max-width: 300px;
@@ -34,7 +34,7 @@
             background-color: #fdfdfd;
         }
 
-        #totp #header {
+        #otp #header {
             text-align: center;
             width: 100%;
             color: var(--blue);
@@ -44,30 +44,30 @@
             border-bottom: 1px solid var(--gray);
         }
 
-        #totp #content {
+        #otp #content {
             /* width: 80%; */
             padding: 0 1em;
             text-align: justify;
         }
 
-        #totp #form {
+        #otp #form {
             display: flex;
             flex-direction: column;
             margin-top: 1rem;
         }
 
-        #totp #form #inputs {
+        #otp #form #inputs {
             display: flex;
             flex-direction: row;
             justify-content: space-evenly;
         }
 
-        #totp #form #inputs input {
+        #otp #form #inputs input {
             text-align: center;
             width: 1em;
         }
 
-        #totp #warn {
+        #otp #warn {
             border-top: 1px solid var(--gray);
             padding-top: 1rem;
             color: var(--warn-text-color);
@@ -75,12 +75,12 @@
             font-size: .9em;
         }
 
-        #totp .input-grb {
+        #otp .input-grb {
             display: grid;
             margin: .3em 1em;
         }
 
-        #totp input {
+        #otp input {
             height: 1.5rem;
             border: 1px solid var(--gray);
             border-radius: 8px;
@@ -156,13 +156,15 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
-
+        #submit-btn:focus{
+            background: var(--blue);
+            color: white;
+        }
         .app-name {
             color: var(--blue);
             font-weight: bold;
             font-style: italic;
         }
-
         #timer {
             aspect-ratio: 1/1;
             margin: .5em auto;
@@ -173,7 +175,7 @@
 </head>
 
 <body>
-    <div id="totp">
+    <div id="otp">
         <img src="/public/tahakkum-logo.png" alt="logo" id="tahakkum-logo">
         <h2 id="header">Tahakkum TOTP</h2>
         <div id="container">
@@ -201,7 +203,12 @@
     <footer>Developed by <a href="http://saracalihan.com" target="_blank" rel="noopener noreferrer">saracalihan</a>
     </footer>
     <script>
-        let remain = {{second}};
+        const remainSecond = new Number(((new Date({{expireAt}}) - new Date())/1000).toFixed());
+        if(remainSecond<0){
+            window.location.replace({{failUrl}});
+        }
+        let ac; /* OTP Abort controller */
+        let remain = remainSecond;
         const containerEl = document.getElementById('container');
         const digits = [...document.getElementsByClassName("code-digit")];
 
@@ -228,14 +235,19 @@
         }, 1000);
 
         let btn = document.getElementById('submit-btn');
-        function login() {
-            fetch("/totp/verify", {
+        function login(otpValue) {
+            fetch("/otp/time-based/verify", {
                 method: 'POST',
                 headers: { 'Content-Type': "application/json" },
                 body: JSON.stringify({
-                    code: digits.map((a) => a.value).reduce((a, b) => a + b),
+                    secret: {{secret}},
+                    id: {{id}},
+                    code: otpValue ?? digits.map((a) => a.value).reduce((a, b) => a + b),
                 })
             })
+                .then(res =>{
+                    window.location.replace( res.status === 200 ? {{redirectUrl}} : {{failUrl}});
+                })
                 .catch(e => {
                     console.log(e.json());
                     alert(e.message);
@@ -253,7 +265,7 @@
                 canvas.height/2,
                 (canvas.width/2) - ctx.lineWidth,
                 Math.PI/2*3,
-                (Math.PI/2*3) - (2 * Math.PI * remain  / {{second}}),
+                (Math.PI/2*3) - (2 * Math.PI * remain  / remainSecond),
                 true
             );
 
@@ -285,6 +297,24 @@
             });
         }
 
+        /* otp autocomplete */
+        ac = new AbortController();
+        setTimeout(() => {
+            ac.abort();
+        }, 1 * 60 * 1000);
+
+        if ('OTPCredential' in window) {
+            window.addEventListener('DOMContentLoaded', e => {
+                navigator.credentials.get({
+                otp: { transport:['sms'] },
+                signal: ac.signal
+                }).then(otp => {
+                    login(otp.code);
+                }).catch(err => {
+                console.log(err);
+                });
+            });
+        }
     </script>
 </body>
 

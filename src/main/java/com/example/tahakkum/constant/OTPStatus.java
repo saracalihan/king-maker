@@ -4,7 +4,8 @@ import java.util.Optional;
 
 public enum OTPStatus {
     Active("Active"),
-    Used("Used"),
+    Success("Success"),
+    Fail("Fail"),
     Expired("Expired");
     private final String name;
 

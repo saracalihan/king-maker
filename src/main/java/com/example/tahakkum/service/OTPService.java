@@ -4,13 +4,12 @@ import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.tahakkum.constant.Constants;
 import com.example.tahakkum.constant.OTPStatus;
 import com.example.tahakkum.constant.OTPTypes;
 import com.example.tahakkum.constant.OTPVariables;
@@ -57,7 +56,16 @@ public class OTPService {
     }
 
     private int generateTOTPCode() {
-        return 0;
+        int code;
+        do {
+            code = generateCode();
+            OTPCode c = otpCodeRepository.findByCode(code);
+            if (c != null && (c.getType() == OTPTypes.TOTP || c.getStatus().equals(OTPStatus.Active.toString()))) {
+                continue;
+            }
+            break;
+        } while (true);
+        return code;
     }
 
     public OTPApp createApp(RegisterAppDto data, User user) {
@@ -96,6 +104,7 @@ public class OTPService {
         code.setApp(app);
         code.setCode(generateOTPCode());
         code.setMetadatas(metadata);
+        code.setType(OTPTypes.OTP);
         code.setOtpId(Cryptation.generateUrlSafeToken(24));
         code.setOtpSecret(Cryptation.generateUrlSafeToken(24));
         code.setExpiredAt(LocalDateTime.now().plusDays(3));
@@ -163,6 +172,21 @@ public class OTPService {
             System.err.println(e);
             return null;
         }
+    }
+
+    public OTPCode createTotpCode(OTPApp app, int time, HashMap<String, Object> metadata) {
+        OTPCode code = new OTPCode();
+        code.setApp(app);
+        code.setCode(generateOTPCode());
+        code.setMetadatas(metadata);
+        code.setType(OTPTypes.TOTP);
+        code.setOtpId(Cryptation.generateUrlSafeToken(24));
+        code.setOtpSecret(Cryptation.generateUrlSafeToken(24));
+        System.err.println("time");
+        System.err.println(time);
+        code.setExpiredAt(LocalDateTime.now().plusSeconds((long)(time + Constants.TOPT_TIME_PADDING)));
+        otpCodeRepository.save(code);
+        return code;
     }
 
     public void deleteCode(OTPCode code) {

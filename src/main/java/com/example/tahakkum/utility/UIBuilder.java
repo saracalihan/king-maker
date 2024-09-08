@@ -2,6 +2,7 @@ package com.example.tahakkum.utility;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
 import java.util.Scanner;
 import java.util.StringJoiner;
 
@@ -89,9 +90,13 @@ public class UIBuilder {
             .replaceAll("\\{\\{name\\}\\}", name);
     }
 
-    public String createTOTP(String name, int second){
+    public String createTOTP(String name, String id, String secret, String redirectUrl, String failUrl, LocalDateTime expireAt){
         return instance.totpTemplate
+        .replaceAll("\\{\\{id\\}\\}", String.format("\"%s\"", id))
+        .replaceAll("\\{\\{secret\\}\\}", String.format("\"%s\"", secret))
+        .replaceAll("\\{\\{redirectUrl\\}\\}", String.format("\"%s\"", redirectUrl))
+        .replaceAll("\\{\\{failUrl\\}\\}", String.format("\"%s\"", failUrl))
             .replaceAll("\\{\\{name\\}\\}", name)
-            .replaceAll("\\{\\{second\\}\\}", String.format("%d", second));
+            .replaceAll("\\{\\{expireAt\\}\\}", String.format("\"%s\"", expireAt.toString()));
     }
 }
