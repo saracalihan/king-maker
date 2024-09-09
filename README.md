@@ -35,12 +35,18 @@ This project does not provide a UI, it is only API.
       - [OAuth](#oauth-1)
       - [Get User Info](#get-user-info)
       - [Login](#logininternal-use)
+    - [(T)OPT](#otp)
+      - [Register OTP App](#register-otp-app)
+      - [Create OTP Code](#create-otp-code)
+      - [Verify OTP Code](#verify-otp-code)
+      - [Create TOTP Code](#create-totp-code)
+      - [Verify TOTP Code](#verify-totp-code)
   + [Database](#database)
   + [Folder Structure](#folder-structure)
 + [Contributing](#contributing)
   + [Rules](#rules)
   + [Development](#development)
-+ [License]
++ [License](#license)
 
 ## Features
 
@@ -87,6 +93,18 @@ This command builds and runs the api then bridges it with postgres:
 ```bash
 # docker-compose up
 docker compose up
+```
+
+**if you dont want to use docker**, you build and run manually with those commands:
+
+```bash
+# compile, this command create jar file in to target folder
+./mvnw compile package
+```
+
+```bash
+# execute jar file, you have to set environment variables. See sample.env file
+java -jar ./target/*.jar
 ```
 
 ## Architecture
@@ -456,7 +474,150 @@ status: `201`
 
 ##### Login
 ##### Me
+
+#### OTP
+
+##### Register OTP App
+
+Method: `POST`
+Path: `/otp/register-app`
+Header:
+```js
+{
+  "x-access-token": "string" // your access token
+}
+```
+Body:
+```js
+{
+  name: "string",
+  redirectUrl: "string"
+  failRedirectUrl: "string"
+  codeRedirectUrl: "string"
+  codeRedirectMethod: "GET|POST|PUT|DELETE"
+  codeRedirectHeader: {}
+  codeRedirectBody: {}
+}
+```
+response:
+```js
+{
+  id: 123
+  clientSecret: "string"
+  clientId: "string"
+  name: "string"
+  redirectUrl: "string"
+  failRedirectUrl: "string"
+  codeRedirectUrl: "string"
+  codeRedirectMethod: "string"
+  codeRedirectHeader: {}
+  codeRedirectBody: {}
+  createdAt: "Date"
+  updatedAt: "Date"
+}
+```
+status: `201`
+
+##### Create OTP Code
+Method: `POST`
+Path: `/otp?client_id=<your_id>&client_secret=<your_secret>`
+Body:
+```js
+{
+  // metadata, we send it back when otp verification is success
+}
+```
+response:
+```js
+{
+  id: "string",
+  secret: "string",
+  validateUrl: "string"
+}
+```
+status: `201`
+
+##### Verify OTP Code
+Method: `POST`
+Path: `/otp/verify`
+Body:
+```js
+{
+  id: "string",
+  secret: "string",
+  code: "string"
+}
+```
+response:
+```js
+{
+  otpId: "string"
+  otpSecret: "string"
+  code: 123456
+  metadatas: {}
+  status: "Success"
+  type: "OTP"
+  expiredAt: "Date"
+  createdAt: "Date"
+  updatedAt: "Date"
+}
+```
+status: `200`
+
+##### Create TOTP Code
+Method: `POST`
+Path: `/otp/time-based?client_id=<your_id>&client_secret=<your_secret>`
+Body:
+```js
+{
+  time: 180, // second
+  metadata: {
+    // we send it back when otp verification is success
+  }
+}
+```
+response:
+```js
+{
+  id: "string",
+  secret: "string",
+  validateUrl: "string",
+  expireAt: "Date"
+}
+```
+status: `201`
+
+##### Verify TOTP Code
+Method: `POST`
+Path: `/otp/time-based/verify`
+Body:
+```js
+{
+  id: "string",
+  secret: "string",
+  code: "string"
+}
+```
+response:
+```js
+{
+  otpId: "string"
+  otpSecret: "string"
+  code: 123456
+  metadatas: {}
+  status: "Success"
+  type: "TOTP"
+  expiredAt: "Date"
+  createdAt: "Date"
+  updatedAt: "Date"
+}
+```
+status: `200`
+
 ### Database
+
+![db diagram](./assets/db.png)
+
 `Todo: Not implemented yet!`
 
 ### Folder Structure
@@ -471,60 +632,84 @@ status: `201`
 ├── README.md
 ├── sample.env # example environment file, real file is `.env`
 ├── src
-├── main
-│   ├── java
-│   │   └── com
-│   │       └── example
-│   │           └── tahakkum
-│   │               ├── Application.java
-│   │               ├── constant
-│   │               │   ├── Constants.java
-│   │               │   ├── Roles.java
-│   │               │   ├── TokenStatuses.java
-│   │               │   └── TokenTypes.java
-│   │               ├── controller
-│   │               │   ├── AuthenticationController.java
-│   │               │   ├── MainController.java
-│   │               │   └── OAuthController.java
-│   │               ├── dto
-│   │               │   ├── authentication
-│   │               │   │   ├── LoginDto.java
-│   │               │   │   ├── LoginResponseDto.java
-│   │               │   │   └── RegisterDto.java
-│   │               │   └── oauth
-│   │               │       └── request
-│   │               │           └── AppRegister.java
-│   │               ├── exception
-│   │               │   └── ResponseException.java
-│   │               ├── handler
-│   │               │   └── GlobalExceptionHandler.java
-│   │               ├── model
-│   │               │   ├── OAuthApp.java
-│   │               │   ├── OAuthToken.java
-│   │               │   ├── Role.java
-│   │               │   ├── Token.java
-│   │               │   └── User.java
-│   │               ├── repository
-│   │               │   ├── OAuthAppRepository.java
-│   │               │   ├── OAuthTokenRepository.java
-│   │               │   ├── TokenRepository.java
-│   │               │   └── UserRepository.java
-│   │               ├── serializer
-│   │               │   └── ResponseExceptionSerializer.java
-│   │               ├── service
-│   │               │   ├── AuthService.java
-│   │               │   ├── TokenService.java
-│   │               │   └── UserService.java
-│   │               ├── template
-│   │               │   └── oauth.html
-│   │               └── utility
-│   │                   ├── Cryptation.java
-│   │                   └── UIBuilder.java
-│   └── resources
-│       ├── application.properties
-│       ├── static
-│       └── templates
-└── test
+    ├── main
+    │   ├── java
+    │   │   └── com
+    │   │       └── example
+    │   │           └── tahakkum
+    │   │               ├── Application.java
+    │   │               ├── config
+    │   │               │   ├── AppConfig.java
+    │   │               │   └── EmptyObjectSerializer.java
+    │   │               ├── constant
+    │   │               │   ├── Constants.java
+    │   │               │   ├── OTPStatus.java
+    │   │               │   ├── OTPTypes.java
+    │   │               │   ├── OTPVariables.java
+    │   │               │   ├── Roles.java
+    │   │               │   ├── TokenStatuses.java
+    │   │               │   └── TokenTypes.java
+    │   │               ├── controller
+    │   │               │   ├── AuthenticationController.java
+    │   │               │   ├── MainController.java
+    │   │               │   ├── OAuthController.java
+    │   │               │   └── OneTimePasswordController.java
+    │   │               ├── dto
+    │   │               │   ├── authentication
+    │   │               │   │   ├── LoginDto.java
+    │   │               │   │   ├── LoginResponseDto.java
+    │   │               │   │   └── RegisterDto.java
+    │   │               │   ├── oauth
+    │   │               │   │   └── request
+    │   │               │   │       └── AppRegister.java
+    │   │               │   └── otp
+    │   │               │       ├── request
+    │   │               │       │   ├── OTPVerifyDto.java
+    │   │               │       │   ├── RegisterAppDto.java
+    │   │               │       │   └── TOTPCreateDto.java
+    │   │               │       └── response
+    │   │               │           ├── OtpDto.java
+    │   │               │           └── TotpDto.java
+    │   │               ├── exception
+    │   │               │   └── ResponseException.java
+    │   │               ├── handler
+    │   │               │   └── GlobalExceptionHandler.java
+    │   │               ├── model
+    │   │               │   ├── OAuthApp.java
+    │   │               │   ├── OAuthToken.java
+    │   │               │   ├── OTPApp.java
+    │   │               │   ├── OTPCode.java
+    │   │               │   ├── Role.java
+    │   │               │   ├── Token.java
+    │   │               │   └── User.java
+    │   │               ├── repository
+    │   │               │   ├── OAuthAppRepository.java
+    │   │               │   ├── OAuthTokenRepository.java
+    │   │               │   ├── OTPAppRepository.java
+    │   │               │   ├── OTPCodeRepository.java
+    │   │               │   ├── TokenRepository.java
+    │   │               │   └── UserRepository.java
+    │   │               ├── serializer
+    │   │               │   └── ResponseExceptionSerializer.java
+    │   │               ├── service
+    │   │               │   ├── AuthService.java
+    │   │               │   ├── OTPService.java
+    │   │               │   ├── TokenService.java
+    │   │               │   └── UserService.java
+    │   │               ├── template
+    │   │               │   ├── oauth.html
+    │   │               │   ├── otp.html
+    │   │               │   └── totp.html
+    │   │               └── utility
+    │   │                   ├── Common.java
+    │   │                   ├── Cryptation.java
+    │   │                   └── UIBuilder.java
+    │   └── resources
+    │       ├── application.properties
+    │       ├── static
+    │       │   └── tahakkum-logo.png
+    │       └── templates
+    └── test
 ```
 
 ## Contributing
