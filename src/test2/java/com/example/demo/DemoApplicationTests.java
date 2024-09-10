@@ -1,4 +1,4 @@
-package com.example.tahakkum;
+package com.saracalihan.tahakkum;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
