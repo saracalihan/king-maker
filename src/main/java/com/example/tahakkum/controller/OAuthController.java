@@ -37,10 +37,15 @@ import com.example.tahakkum.service.TokenService;
 import com.example.tahakkum.utility.Cryptation;
 import com.example.tahakkum.utility.UIBuilder;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController()
 @RequestMapping("/oauth2")
+@Tag(name = "OAuth", description = "Easy login")
 public class OAuthController {
     @Autowired
     private OAuthAppRepository oauthAppRepository;
@@ -54,6 +59,12 @@ public class OAuthController {
     @Autowired
     private TokenService tokenService;
 
+    @Operation(summary = "Register a new OAuth application")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "App registered successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid request data"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized request")
+    })
     @PostMapping("/register-app")
     public OAuthApp registerApp(@Valid @RequestBody(required = true) AppRegister registerDto, @RequestHeader(name = "x-access-token") String token) throws ResponseException {
         if (oauthAppRepository.existsByName(registerDto.getName())) {
@@ -108,6 +119,11 @@ public class OAuthController {
         return app;
     }
 
+    @Operation(summary = "Authorize an OAuth application")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Authorization page returned"),
+        @ApiResponse(responseCode = "400", description = "Invalid client credentials")
+    })
     @GetMapping(value = "/auth", produces = MediaType.TEXT_HTML_VALUE)
     public String oauth(
             @RequestParam(name = "client_id", required = true) String clientId,
@@ -136,6 +152,11 @@ public class OAuthController {
         return UIBuilder.getInstance().createLogin(app.getName(), app.getDescription(), app.getHomepage(), app.getPhoto(), app.getScopes(), app.getRedirectUrl(), validationToken.getValue());
     }
 
+    @Operation(summary = "Get user info with access token")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User info returned"),
+        @ApiResponse(responseCode = "401", description = "Invalid or expired access token")
+    })
     @GetMapping("/user-info")
     public Map<String, Object> getUser(@RequestHeader(name = "x-access-token", required = true) String accessToken) throws ResponseException {
         OAuthToken token = oauthTokenRepository.findOneByValue(accessToken);
@@ -149,11 +170,22 @@ public class OAuthController {
         return token.getUser().getFields(app.getScopes());
     }
 
+    @Operation(summary = "Refresh OAuth access token")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Access token refreshed"),
+        @ApiResponse(responseCode = "401", description = "Invalid refresh token")
+    })
     @PostMapping("/token")
     public void refreshAccessToken() {
         
     }
 
+    @Operation(summary = "Login user and generate access token")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User logged in and access token generated"),
+        @ApiResponse(responseCode = "400", description = "Invalid login credentials"),
+        @ApiResponse(responseCode = "401", description = "Invalid or expired token")
+    })
     @PostMapping("/login")
     public RedirectView loginUser(@Valid @RequestBody(required = true) LoginDto loginDto,
             @RequestParam(required = true, name = "token") String t) throws ResponseException {
