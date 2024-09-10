@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.tahakkum.service.AuthService;
 import com.example.tahakkum.service.TokenService;
 import com.example.tahakkum.service.UserService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.example.tahakkum.constant.Roles;
 import com.example.tahakkum.constant.TokenStatuses;
 import com.example.tahakkum.constant.TokenTypes;
@@ -27,6 +33,7 @@ import jakarta.validation.Valid;
 
 @RestController()
 @RequestMapping("/authentication")
+@Tag(name = "Basic Authentication", description = "`username`, `password` and `access-token` authentication")
 public class AuthenticationController {
     @Autowired
     private UserService userService;
@@ -40,6 +47,11 @@ public class AuthenticationController {
     @Autowired
     private EntityManager entityManager;
 
+    @Operation(summary = "Login")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successful login"),
+        @ApiResponse(responseCode = "401", description = "Invalid email or password")
+    })
     @PostMapping("/login")
     public LoginResponseDto login(@Valid @RequestBody(required = true) LoginDto loginDto) throws ResponseException {
         // TODO:store login success and fail dates
@@ -50,6 +62,13 @@ public class AuthenticationController {
 
         return isLogin.get();
     }
+
+    @Operation(summary = "Register")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "User registered successfully"),
+        @ApiResponse(responseCode = "400", description = "Password mismatch or invalid input"),
+        @ApiResponse(responseCode = "401", description = "Email or username already exists")
+    })
 
     @PostMapping("/register")
     @ResponseStatus(code=HttpStatus.CREATED)
@@ -78,6 +97,12 @@ public class AuthenticationController {
         return user;
     }
 
+    @Operation(summary = "Get my information")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User information retrieved successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized or invalid access token")
+    })
+
     @GetMapping("/me")
     public LoginResponseDto me(@RequestHeader(name = "x-access-token") String accessToken) throws ResponseException {
         if (accessToken == null) {
@@ -95,6 +120,11 @@ public class AuthenticationController {
         return res;
     }
 
+    @Operation(summary = "Logout")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User logged out successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized or invalid access token")
+    })
     @GetMapping("/logout")
     public void logout(@RequestHeader(name = "x-access-token") String accessToken) throws ResponseException {
         if (accessToken == null) {

@@ -46,10 +46,15 @@ import com.example.tahakkum.service.TokenService;
 import com.example.tahakkum.utility.Common;
 import com.example.tahakkum.utility.UIBuilder;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController()
 @RequestMapping("/otp")
+@Tag(name = "One Time Password", description = "OTP and TOTP controller")
 public class OneTimePasswordController {
 
     @Autowired
@@ -67,6 +72,14 @@ public class OneTimePasswordController {
         this.restTemplate = resTemp;
     }
 
+    @Operation(
+        summary = "Create OTP application",
+        description = "You should to create an application for create and verify OTP code. You need to store `id` and `secret` values for create code")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successful Operation"),
+        @ApiResponse(responseCode = "400", description = "Invalid redirect url or method"),
+        @ApiResponse(responseCode = "401", description = "Invalid access token"),
+    })
     @PostMapping("/register-app")
     public OTPApp createApp(@Valid @RequestBody(required = true) RegisterAppDto createDto,
             @RequestHeader(name = "x-access-token") String token) throws ResponseException {
@@ -104,6 +117,12 @@ public class OneTimePasswordController {
         return otpService.createApp(createDto, accessToken.get().getUser());
     }
 
+    @Operation(summary = "Create OTP code")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Successful Operation"),
+        @ApiResponse(responseCode = "400", description = "OTP code created but code redirect operation is failed!"),
+        @ApiResponse(responseCode = "401", description = "Invalid `client_id` or `client_secret`"),
+    })
     @PostMapping()
     public ResponseEntity<Object> createOtpCode(
             @RequestParam(name = "client_id", required = true) String clientId,
@@ -161,6 +180,11 @@ public class OneTimePasswordController {
         return ResponseEntity.status(201).body(resDto);
     }
 
+    @Operation(summary = "Get OTP code verification UI")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successful Operation"),
+        @ApiResponse(responseCode = "404", description = "invalid `id`"),
+    })
     @GetMapping("/verify/{id}")
     public String createotpUI(@PathVariable("id") String id) throws ResponseException {
         OTPCode code = otpService.findCodeByOtpId(id);
@@ -177,6 +201,12 @@ public class OneTimePasswordController {
         return res;
     }
 
+    @Operation(summary = "Verify OTP code")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successful Operation"),
+        @ApiResponse(responseCode = "400", description = "The code is invalid!"),
+        @ApiResponse(responseCode = "401", description = "Invalid `id` or `secret`"),
+    })
     @PostMapping("/verify")
     public OTPCode validateCode(@RequestBody() @Valid OTPVerifyDto body) {
         OTPCode code = otpService.findCodeByOtpId(body.id);
@@ -196,6 +226,12 @@ public class OneTimePasswordController {
         return code;
     }
 
+    @Operation(summary = "Create TOTP code")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Successful Operation"),
+        @ApiResponse(responseCode = "400", description = "OTP code created but code redirect operation is failed!"),
+        @ApiResponse(responseCode = "401", description = "Invalid `client_id` or `client_secret`"),
+    })
     @PostMapping("/time-based")
     public ResponseEntity<Object> createTotp(@RequestParam(name = "client_id", required = true) String clientId,
     @RequestParam(name = "client_secret", required = true) String clientSecret,
@@ -252,6 +288,12 @@ public class OneTimePasswordController {
         return ResponseEntity.status(201).body(resDto);
     }
 
+    @Operation(summary = "Verify TOTP code")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successful Operation"),
+        @ApiResponse(responseCode = "400", description = "The `code` is invalid or expired!"),
+        @ApiResponse(responseCode = "401", description = "Invalid `id` or `secret`"),
+    })
     @PostMapping("/time-based/verify")
     public OTPCode validateTotpCode(@RequestBody() @Valid OTPVerifyDto body) {
         OTPCode code = otpService.findCodeByOtpId(body.id);
@@ -270,6 +312,11 @@ public class OneTimePasswordController {
         return code;
     }
 
+    @Operation(summary = "Get TOTP code verification UI")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successful Operation"),
+        @ApiResponse(responseCode = "404", description = "invalid `id`"),
+    })
     @GetMapping("/time-based/verify/{id}")
     public String createTotpUI(@PathVariable("id") String id) throws ResponseException {
         OTPCode code = otpService.findCodeByOtpId(id);

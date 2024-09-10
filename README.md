@@ -10,6 +10,7 @@ and monitor all these operations to `admin` and `moderator`
 users.
 
 This project does not provide a UI, it is only API.
+> Except Swagger documentation and authentication ui's like OAuth or OTP
 
 > [!WARNING]
 > This project is under development and developed for educational purposes.
@@ -255,6 +256,8 @@ verify the code is sent to you. Instead of using `verify` endpoints,
 you can redirect your users directly to this address.
 
 ### Endpoints
+
+For more details, run the project and sen `GET` request to `/docs` endpoint.
 
 #### Authentication Endpoints
 ##### Register
