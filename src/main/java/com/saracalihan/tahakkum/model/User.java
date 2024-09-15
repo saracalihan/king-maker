@@ -67,11 +67,15 @@ public class User {
 
     @JsonIgnore
     @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
-    OAuthApp oauthApp;
+    Application applications;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
-    OTPApp otpApp;
+    // @JsonIgnore
+    // @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
+    // OAuthApp oauthApp;
+
+    // @JsonIgnore
+    // @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
+    // OTPApp otpApp;
 
     public User(String name, String username, String email, Roles role) {
         this.name = name;
